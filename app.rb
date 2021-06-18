@@ -70,7 +70,8 @@ post '/signup' do
             {user_id: session[:user], name: '知力', color: 'blue'},
             {user_id: session[:user], name: '生活力', color: 'green'},
             {user_id: session[:user], name: '対人力', color: 'yellow'},
-            {user_id: session[:user], name: '体力', color: 'red'}
+            {user_id: session[:user], name: '体力', color: 'red'},
+            {user_id: session[:user], name: '徳', color: 'orange'}
         ])
     end
     redirect '/'

@@ -106,16 +106,18 @@
                                     
                                     <!--modal window-->
                                     <div class="me-0 ms-0"><button value="#task-edit" class="btn p-0 modal-open"><i class="fas fa-edit text-primary"></i></button></div>
-                                    <div id="task-edit" class="modal-content  card text-dark" style="height: 40vh; width: 70vh">
+                                    <div id="task-edit" class="modal-content  card text-dark" style="height: 40vh; width: 70vh; background-color: #ffefd5">
                                         <form action="/edit_task/<%= task.id %>" method="post">
-                                            <input type="text" name="body">
-                                            <input type="date" name="date">
-                                            <% @abilities.each do |ability| %>
-                                                <label>
-                                                    <input type="checkbox" name="ability_id[]" value="<%= ability.id %>"><%= ability.name %>
-                                                </label>
-                                            <% end %>
-                                            <button type="submit">編集</button>
+                                            <p><input type="text" name="body" class="bg-transparent w-100"></p>
+                                            <p><input type="date" name="date" class="bg-transparent"></p>
+                                            <p>
+                                                <% @abilities.each do |ability| %>
+                                                    <label>
+                                                        <input type="checkbox" name="ability_id[]" value="<%= ability.id %>"><%= ability.name %>
+                                                    </label>
+                                                <% end %>
+                                            </p>
+                                            <p><button type="submit">Edit</button></p>
                                         </form>
                                     </div>
                                     
@@ -136,16 +138,18 @@
                             <button class="btn modal-open rounded-circle bg-primary fs-4" value="#task-add" style="font-weight: bold">＋</button>
                         </div>
                         
-                        <div id="task-add" class="modal-content card text-dark" style="height: 40vh; width: 70vh">
+                        <div id="task-add" class="modal-content card text-dark" style="height: 40vh; width: 70vh; background-color: #ffefd5">
                             <form action="/new_task" method="post">
-                                <p><input type="text" name="body"></p>
-                                <input type="date" name="date">
-                                <% @abilities.each do |ability| %>
-                                    <label>
-                                        <input type="checkbox" name="ability_id[]" value="<%= ability.id %>"><%= ability.name %>
-                                    </label>
-                                <% end %>
-                                <button type="submit">登録</button>
+                                <p><input type="text" name="body" class="bg-transparent w-100"></p>
+                                <p><input type="date" name="date" class="bg-transparent"></p>
+                                <p>
+                                    <% @abilities.each do |ability| %>
+                                        <label>
+                                            <input type="checkbox" name="ability_id[]" value="<%= ability.id %>"><%= ability.name %>
+                                        </label>
+                                    <% end %>
+                                </p>
+                                <p><button type="submit">Create</button></p>
                             </form>
                         </div>
                     </div>
