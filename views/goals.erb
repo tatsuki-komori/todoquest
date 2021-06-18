@@ -1,0 +1,120 @@
+<div class="goals-bg container-fluid p-0">
+        
+    <!--共通ボタン-->
+    <div class="public-buttons clearfix" id="public-buttons">
+        <div class="float-end me-1">
+            <button type="button" onclick="location.href='/'" class="btn mt-1 mb-1 pt-0 pb-0 bg-secondary bg-gradient border border-dark">ホーム</button>
+            <button type="button" onclick="location.href='/goals'" class="btn mt-1 mb-1 pt-0 pb-0 bg-secondary bg-gradient border border-dark">ゴール</button>
+            <button type="button" onclick="location.href='/abilities_analytics/all'" class="btn mt-1 mb-1 pt-0 pb-0 bg-secondary bg-gradient border border-dark">ステータス</button>
+            <button type="button" onclick="location.href='/signout'" class="btn mt-1 mb-1 pt-0 pb-0 bg-secondary bg-gradient border border-dark">サインアウト</button>
+        </div>
+    </div>
+
+    <div class="container col-11 w-100" style="height: 85%">
+        <div class="row h-100 pt-3">
+            <div class="card rounded col-2 retro-window h-100">
+                <div class="overflow-auto pt-3 pb-3">
+                    <% @goals.where(achieve_goal: false).each do |goal| %>
+                    <form action="/select_current_goal/<%= goal.id %>" method="post">
+                        <button type="submit" class="w-100 mb-1 rounded" style="background-color: rgba(255,165,0, 0.7)"><%= goal.goal_body %></button>
+                    </form>
+                    <% end %>
+                </div>
+                <div class="mt-auto mb-1 ms-auto me-1">
+                    <button class="btn modal-open rounded-circle bg-primary fs-4 text-light" value="#add-goal" style="font-weight: bold">＋</button>
+                </div>
+            </div>
+            
+            <div class="col-8 text-stroke h-100" style="font-weight: 800; color: #ffa07a">
+                <div class="old-paper h-100 w-100 p-5 overflow-auto" style="border-radius: 30px">
+                    <% if @current_goal %>
+                    <p>
+                        <h3>Goal</h3>
+                        <div class="text-break"><%= @current_goal.goal_body %></div>
+                    </p>
+                    
+                    <p>
+                        <h4>Title</h4>
+                        <div class="text-break"><%= @current_goal.title_name %></div>
+                    </p>
+                    
+                    <p>
+                        <h4>Obstacles</h4>
+                        <% @current_goal.obstacles.each do |obstacle| %>
+                            <div class="text-break"><%= obstacle.obstacle_body %></div>
+                        <% end %>
+                    </p>
+                    
+                    <p>
+                        <h4>Measures</h4>
+                        <% @current_goal.measures.each do |measure| %>
+                            <div class="text-break"><%= measure.measure_body %></div>
+                        <% end %>
+                    </p>
+                    
+                    <p>
+                        <h4>Small Goals</h4>
+                        <% @current_goal.smallgoals.each do |smallgoals| %>
+                            <div class="text-break"><%= smallgoals.smallgoal_body %></div>
+                        <% end %>
+                    </p>
+                    <% end %>
+                </div>
+            </div>
+            
+            <div class="card rounded col-2 retro-window h-100">
+                <div class="text-center text-stroke" style="height: 10%; font-size: 2em; color: #7cfc00">称号</div>
+                <div class="overflow-auto pt-3 pb-3" style="height: 90%">
+                    <% @goals.where(achieve_goal: true).each do |goal| %>
+                        <form action="/select_current_goal/<%= goal.id %>" method="post" class="mb-1">
+                            <button type="submit" class="w-100" style="background-color: rgba(50,205,50,0.8)"><%= goal.title_name %></button>
+                        </form>
+                    <% end %>
+                </div>
+            </div>
+            
+        </div>
+        
+        <div id="add-goal" class="modal-content w-50 overflow-auto" style="height: 80%; background-color: #c0c0c0">
+            <form action="/goals/create_goal" method="post" class="">
+                <h3 class="text-stroke text-light">Goal</h3>
+                <input type="text" name="goal_body" class="bg-transparent text-break rounded mb-1" style="width: 90%">
+                
+                <h4 class="text-stroke text-light">Title</h4>
+                <input type="text" name="goal_title" class="bg-transparent text-break rounded mb-1" style="width: 90%">
+                
+                <h4 class="text-stroke text-light">Obstacles</h4>
+                <% for i in 1..session[:obstacles_num] %>
+                    <input type="text" name="obstacles[]" class="bg-transparent text-break rounded mb-1" style="width: 90%">
+                <% end %>
+                <button type="submit" form="obstacle-inc" class="btn p-0 text-primary">+</button>
+                <button type="submit" form="obstacle-dec" class="btn p-0 text-danger">-</button>
+                
+                <h4 class="text-stroke text-light">Measures</h4>
+                <% for i in 1..session[:measures_num] %>
+                    <input type="text" name="measures[]" class="bg-transparent text-break rounded mb-1" style="width: 90%">
+                <% end %>
+                <button type="submit" form="measure-inc" class="btn p-0 text-primary">+</button>
+                <button type="submit" form="measure-dec" class="btn p-0 text-danger">-</button>
+                
+                <h4 class="text-stroke text-light">Small Goals</h4>
+                <% for i in 1..session[:small_goals_num] %>
+                    <input type="text" name="small_goals[]" class="bg-transparent text-break rounded mb-1" style="width: 90%">
+                <% end %>
+                <button type="submit" form="smallgoal-inc" class="btn p-0 text-primary">+</button>
+                <button type="submit" form="smallgoal-dec" class="btn p-0 text-danger">-</button>
+                
+                <div class="mt-auto mb-1 ms-auto me-1"><button type="submit" style="background-color: #7cfc">この目標に決めた！</button></div>
+            </form>
+            
+            <form action="/goals/add_obstacles/inc" method="post" id="obstacle-inc"></form>
+            <form action="/goals/add_obstacles/dec" method="post" id="obstacle-dec"></form>
+            <form action="/goals/add_measures/inc" method="post" id="measure-inc"></form>
+            <form action="/goals/add_measures/dec" method="post" id="measure-dec"></form>
+            <form action="/goals/add_small_goal/inc" method="post" id="smallgoal-inc"></form>
+            <form action="/goals/add_small_goal/dec" method="post" id="smallgoal-dec"></form>
+        </div>
+    </div>
+</div>
+
+

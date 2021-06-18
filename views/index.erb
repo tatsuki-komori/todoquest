@@ -1,0 +1,193 @@
+<% unless session[:user] %>
+<div class="container-fluid text-center align-items-center d-flex justify-content-center" style="background: #150e0a; height: 100vh">
+    <div class="card col-6 p-3">
+        <h1>ToDoQuest</h1>
+        <a href="/signin">ログイン</a><a href="/signup">新規登録</a><br>
+        <h2>未ログイン</h2>
+    </div>
+ </div>   
+<% else %>
+
+    <div class="index-bg container-fluid p-0">
+        
+        <!--共通ボタン-->
+        <div class="public-buttons clearfix" id="public-buttons">
+            <div class="float-end me-1">
+                <button type="button" onclick="location.href='/'" class="btn mt-1 mb-1 pt-0 pb-0 bg-secondary bg-gradient border border-dark">ホーム</button>
+                <button type="button" onclick="location.href='/goals'" class="btn mt-1 mb-1 pt-0 pb-0 bg-secondary bg-gradient border border-dark">ゴール</button>
+                <button type="button" onclick="location.href='/abilities_analytics/all'" class="btn mt-1 mb-1 pt-0 pb-0 bg-secondary bg-gradient border border-dark">ステータス</button>
+                <button type="button" onclick="location.href='/signout'" class="btn mt-1 mb-1 pt-0 pb-0 bg-secondary bg-gradient border border-dark">サインアウト</button>
+            </div>
+        </div>
+        
+        
+        <div class="container col-11" style="height: 75%; color: white">
+            <div class="row h-100">
+                <div class="card rounded col-2 retro-window p-1 mt-1 h-100">
+                    <div class="h-25">
+                        <!--todoリストフィルター-->
+                        <form action="/task_filter_all" method="post" class="m-1">
+                            <button type="submit" class="text-light text-stroke w-100 ms-auto" style="background-color: rgba(0,0,180,0.5)">box</button>
+                        </form>
+                        <form action="/task_filter_today" method="post" class="m-1 mt-0">
+                            <button type="submit" class="text-light text-stroke w-100" style="background-color: rgba(0,0,180,0.5)">today</button>
+                        </form>
+                        <form action="/task_filter_tomorrow" method="post" class="m-1 mt-0">
+                            <button type="submit" class="text-light text-stroke w-100" style="background-color: rgba(0,0,180,0.5)">tomorrow</button>
+                        </form>
+                        <form action="/task_filter_other" method="post" class="ms-1 me-1 mt-0">
+                            <button type="submit" class="text-light text-stroke w-100 d-inline-block text-truncate" style="background-color: rgba(0,0,180,0.5)">after tomorrow</button>
+                        </form>
+                    </div>
+                    
+                    <!--目標一覧-->
+                    <div class="overflow-auto h-75">
+                        <% @goals.where(achieve_goal: false).each do |goal| %>
+                            <form action="/select_current_goal/<%= goal.id %>" method="post" class="ms-1 mb-1">
+                                <button type="submit" class="w-100" style="background-color: rgba(255,165,0, 0.7)"><%= goal.goal_body %></button>
+                            </form>
+                        <% end %>
+                    </div>
+                </div>
+                
+                <div class="col-8 ps-1 pe-1 mt-1 h-100">
+                    <div class="card rounded retro-window p-1 h-25" style="margin-bottom: 0.3%">
+                        <div>
+                            <!--目標表示-->
+                            <h3 class="text-stroke">Goal</h3>
+                            <% if @current_goal %>
+                                <div class="d-flex">
+                                    <div class="w-100 text-stroke x-scroller" style="color: #ffdab9"><%= @current_goal.goal_body %></div>
+                                    <div class="me-0 ms-auto">
+                                        <form action="/complete_goal/<%= @current_goal.id %>" method="post">
+                                            <button type="submit" class="btn rounded text-stroke text-light pt-0 pb-0 ps-1 pe-1 bg-secondary">Complete</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            <% end %>
+                            
+                            <h4 class="text-stroke">Small Goal</h4>
+                            <% if @smallgoal %>
+                                <div class="d-flex">
+                                    <div class="w-100 text-stroke x-scroller" style="color: #ffa07a"><%= @smallgoal.smallgoal_body %></div>
+                                    <div class="me-0 ms-auto">
+                                        <form action="/complete_smallgoal/<%= @smallgoal.id %>" method="post">
+                                            <button type="submit" class="btn rounded text-stroke text-light pt-0 pb-0 ps-1 pe-1 bg-secondary">Complete</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            <% end %>
+                        </div>
+                    </div>
+                    
+                    <div class="card rounded retro-window" style="height: 74.7%">
+                        <!--タスク一覧-->
+                        <div class="h-75">
+                            <% @tasks.where(achieve_task: false).each do |task| %>
+                                <div class="d-flex">
+                                    <!--完了-->
+                                    <div class="ms-0 me-1">
+                                        <form action="/complete_task/<%= task.id %>" method="post">
+                                            <button type="submit" class="btn p-0"><i class="fas fa-check fa-lg text-primary text-stroke"></i></button>
+                                        </form>
+                                    </div>
+                
+                                    <ul class="ms-0 me-auto x-scroller ps-0" style="max-width: 75%">
+                                        <!--内容-->
+                                        <li class="d-inline-block"><%= task.body %> <%= task.deadline_date %></li>
+                                    </ul>
+                                    <ul class="x-scroller ps-0 ms-auto me-1" style="width: 15%;">
+                                        <% task.task_abilities.each do |ta| %>
+                                            <li class="d-inline-block border-dark card bg-success text-stroke ps-1 pe-1">
+                                                <%= ta.ability.name %>
+                                            </li>
+                                        <% end %>
+                                    </ul>
+                                    
+                                    <!--modal window-->
+                                    <div class="me-0 ms-0"><button value="#task-edit" class="btn p-0 modal-open"><i class="fas fa-edit text-primary"></i></button></div>
+                                    <div id="task-edit" class="modal-content  card text-dark" style="height: 40vh; width: 70vh">
+                                        <form action="/edit_task/<%= task.id %>" method="post">
+                                            <input type="text" name="body">
+                                            <input type="date" name="date">
+                                            <% @abilities.each do |ability| %>
+                                                <label>
+                                                    <input type="checkbox" name="ability_id[]" value="<%= ability.id %>"><%= ability.name %>
+                                                </label>
+                                            <% end %>
+                                            <button type="submit">編集</button>
+                                        </form>
+                                    </div>
+                                    
+                                    <!--削除-->
+                                    <div class="me-0 ms-0">
+                                        <form action="/delete_task/<%= task.id %>" method="post">
+                                            <button type="submit" class="btn p-0"><i class="far fa-trash-alt text-danger"></i></button>
+                                        </form>
+                                    </div>
+                                </div>
+                                
+                            <% end %>
+                        </div>
+                        
+                        
+                        <!--タスク追加-->
+                        <div class="mt-auto mb-1 ms-auto me-1">
+                            <button class="btn modal-open rounded-circle bg-primary fs-4" value="#task-add" style="font-weight: bold">＋</button>
+                        </div>
+                        
+                        <div id="task-add" class="modal-content card text-dark" style="height: 40vh; width: 70vh">
+                            <form action="/new_task" method="post">
+                                <p><input type="text" name="body"></p>
+                                <input type="date" name="date">
+                                <% @abilities.each do |ability| %>
+                                    <label>
+                                        <input type="checkbox" name="ability_id[]" value="<%= ability.id %>"><%= ability.name %>
+                                    </label>
+                                <% end %>
+                                <button type="submit">登録</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+    
+                
+                <div class="card d-flex flex-column rounded col-2 retro-window h-100 p-1 mt-1 ">
+                    <div class="card bg-transparent overflow-auto border-0" style="height: 60%">
+                        <!--称号表示-->
+                        <% @goals.where(achieve_goal: true).each do |goal| %>
+                        <div class="card mb-1 text-center text-stroke" style="background-color: rgba(255,215, 0, 0.8)">
+                            <%= goal.title_name %>
+                        </div>
+                        <% end %>
+                    </div>
+                    
+                    <div class="card bg-transparent mt-auto mb-0 border-0" style="height: 40%">
+                        <!--能力値表示-->
+                        <% @abilities.each do |ability| %>
+                            <%= ability.name %>: <%= ability.point %>
+                            <div class="progress" style="background-color: rgba(0, 0, 0, 0.4); border: 1px solid white">
+                                <div class="progress-bar" role="progressbar" style="width: <%= ability.point %>%" aria-valuenow="<%= ability.point %>" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                        <% end %>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    
+        <div class="logs col-lg-11">
+            <!--ログ-->
+            <% @tasks.where(achieve_task: true).order(achieve_date: "DESC").last(3).each do |t| %>
+                <% if t.task_abilities.length != 0 %>
+                <p>「<%= t.body %>」を達成して<% t.task_abilities.each do |ta| %><%= ta.ability.name %><% end %>が増加しました</p>
+                <% else %>
+                <p>「<%= t.body %>」を達成しました。</p>
+                <% end %>
+            <% end %>
+        </div>
+        
+    </div>
+    
+<% end %>
+

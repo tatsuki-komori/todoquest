@@ -1,0 +1,84 @@
+<div class="abilities-bg container-fluid p-0 d-flex flex-column">
+    
+    <!--共通ボタン-->
+    <div class="public-buttons clearfix" id="public-buttons">
+        <div class="float-end me-1">
+            <button type="button" onclick="location.href='/'" class="btn mt-1 mb-1 pt-0 pb-0 bg-secondary bg-gradient border border-dark">ホーム</button>
+            <button type="button" onclick="location.href='/goals'" class="btn mt-1 mb-1 pt-0 pb-0 bg-secondary bg-gradient border border-dark">ゴール</button>
+            <button type="button" onclick="location.href='/abilities_analytics/all'" class="btn mt-1 mb-1 pt-0 pb-0 bg-secondary bg-gradient border border-dark">ステータス</button>
+            <button type="button" onclick="location.href='/signout'" class="btn mt-1 mb-1 pt-0 pb-0 bg-secondary bg-gradient border border-dark">サインアウト</button>
+        </div>
+    </div>
+    
+    <div class="row col-12 pt-3" style="height: 90%">
+        <div class="col-2 ps-4 h-100">
+            <div class="card rounded retro-window h-100 p-2">
+                <div class="h-100 overflow-auto">
+                    <% @abilities.each do |ability| %>
+                    <button type="button" class="w-100 mb-1 rounded" style="background-color: rgba(130,252,0,0.8)" onclick="location.href='/abilities_analytics/<%= ability.id %>'"><%= ability.name %></button>
+                    <% end %>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-10 h-100">
+            <div class="h-25">
+                <div class="h-50">
+                    <p class="fs-1 m-0 ps-5">Today</p>
+                </div>
+                
+                <ul class="h-50 d-flex overflow-auto">
+                    <% @abilities.each_with_index do |ability, idx| %>
+                        <li class="card bg-transparent border-0 d-inner-block w-25 h-100 text-light text-stroke"><%= ability.name %>が<%= @ap_today[idx] %>増加しました。</li>
+                    <% end %>
+                </ul>
+            </div>
+            <div class="h-75">
+                <div class="pt-5" style="height: 100%; background-color: rgba(255,255,255,0.7); border-radius: 10px">
+                    <canvas id="week_graph" height=100 ></canvas>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+    
+</div>
+
+<script>
+    arr = <%= @ability_point %>;
+    week_ctx = document.getElementById("week_graph").getContext("2d");
+    data = {
+        labels: ["7日前", "6日前", "5日前", "4日前", "3日前", "2日前", "1日前"],
+        datasets: [
+            {
+                label: "week line",
+                fillColor: "rgba(180,180,180,0.3)",
+                strokeColor: "rgba(180,180,180,1)",
+                pointColor: "rgba(180,180,180,1)",
+                pointStrokeColor: "#fff",
+                pointHighlightFill: "#fff",
+                pointHighlightStroke: "rgba(180,180,180,1)",
+                data: [arr[23], arr[24], arr[25], arr[26], arr[27], arr[28], arr[29]]
+            }
+        ]
+    };
+    
+    options = {
+        scales: {
+            yAxes: [
+                {
+                    ticks: {
+                        beginAtZero: true
+                    },
+                }
+            ],
+        }
+    };
+    
+    lineChart = new Chart(week_ctx, {
+        type: 'line',
+        data: data,
+        options: options
+    });
+    
+</script>
